@@ -20,7 +20,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
       <table class="table table-hover">
         <thead><tr><th>Nome</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
         <tbody>
-          @for (e of equipamentos; track e.id) {
+          @for (e of equipamentos(); track e.id) {
             <tr>
               <td>{{ e.nome }}</td><td>{{ e.tipo }}</td>
               <td><span class="badge" [class.bg-success]="e.status === 'ativo'"
