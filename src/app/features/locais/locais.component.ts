@@ -20,7 +20,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
       <table class="table table-hover">
         <thead><tr><th>Nome</th><th>Cliente</th><th>Endereço</th><th>Ações</th></tr></thead>
         <tbody>
-          @for (l of locais(); track l.id) {
+          @for (l of locais; track l.id) {
             <tr>
               <td>{{ l.nome }}</td>
               <td>{{ nomeCliente(l.clienteId) }}</td>
