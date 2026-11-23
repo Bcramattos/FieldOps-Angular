@@ -58,3 +58,4 @@ export class AcompanhamentoComponent implements OnInit {
     this.api.listar('inspecoes').subscribe(d => this.inspecoes = d);
   }
 }
+//essa tela é do acompanhamento
