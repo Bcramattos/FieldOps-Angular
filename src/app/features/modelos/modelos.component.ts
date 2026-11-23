@@ -19,7 +19,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
       </div>
 
       <div class="row g-3">
-        @for (m of modelos(); track m.id) {
+        @for (m of modelos; track m.id) {
           <div class="col-md-4">
             <div class="card h-100">
               <div class="card-body">
