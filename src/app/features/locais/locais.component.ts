@@ -1,44 +1,55 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
+import { Local, Cliente } from '../../core/models/models';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-locais',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   template: `
-    <h1 class="h3 mb-4">Locais</h1>
+    <div class="container-fluid p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Locais de inspeção</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalLocal">
+          <i class="bi bi-plus-lg"></i> Novo local
+        </button>
+      </div>
+      <table class="table table-hover">
+        <thead><tr><th>Nome</th><th>Cliente</th><th>Endereço</th><th>Ações</th></tr></thead>
+        <tbody>
+          @for (l of locais(); track l.id) {
+            <tr>
+              <td>{{ l.nome }}</td>
+              <td>{{ nomeCliente(l.clienteId) }}</td>
+              <td>{{ l.endereco }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-danger" (click)="excluir(l.id)"><i class="bi bi-trash"></i></button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
 
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalLocais">
-      <i class="bi bi-plus-lg"></i> Novo
-    </button>
-
-    <table class="table table-hover">
-      <thead><tr><th>{{ "Nome" }}</th><th>{{ "Cliente ID" }}</th><th>{{ "Endereço" }}</th><th></th></tr></thead>
-      <tbody>
-        @for (item of itens(); track item.id) {
-          <tr>
-            <td>{{ item.nome }}</td><td>{{ item.clienteId }}</td><td>{{ item.endereco }}</td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm btn-outline-danger" (click)="excluir(item.id)"><i class="bi bi-trash"></i></button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-
-    <!-- Modal -->
-    <div class="modal fade" id="modalLocais">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header"><h5 class="modal-title">Novo Locai</h5>
-            <button class="btn-close" data-bs-dismiss="modal"></button></div>
-          <div class="modal-body">
-            <input class="form-control mb-2" placeholder="Nome" [(ngModel)]="novo.nome"><input class="form-control mb-2" placeholder="Cliente ID" [(ngModel)]="novo.clienteId"><input class="form-control mb-2" placeholder="Endereço" [(ngModel)]="novo.endereco">
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button class="btn btn-primary" (click)="salvar()">Salvar</button>
+      <div class="modal fade" id="modalLocal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Novo local</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+              <input class="form-control mb-2" placeholder="Nome" [(ngModel)]="form.nome">
+              <select class="form-select mb-2" [(ngModel)]="form.clienteId">
+                <option [value]="0">Selecione o cliente</option>
+                @for (c of clientes; track c.id) { <option [value]="c.id">{{ c.nome }}</option> }
+              </select>
+              <input class="form-control mb-2" placeholder="Endereço" [(ngModel)]="form.endereco">
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button class="btn btn-primary" (click)="salvar()">Salvar</button>
+            </div>
           </div>
         </div>
       </div>
@@ -47,25 +58,15 @@ import { ApiService } from '../../core/services/api.service';
 })
 export class LocaisComponent implements OnInit {
   private api = inject(ApiService);
-  itens: any[] = [];
-  novo: any = {};
+  locais: Local[] = [];
+  clientes: Cliente[] = [];
+  form: Local = { id: 0, nome: '', clienteId: 0, endereco: '' };
 
   ngOnInit(): void {
-    this.carregar();
+    this.api.listar<Local>('locais').subscribe(d => this.locais = d);
+    this.api.listar<Cliente>('clientes').subscribe(d => this.clientes = d);
   }
-
-  carregar(): void {
-    this.api.listar('locais').subscribe(d => this.itens = d);
-  }
-
-  salvar(): void {
-    this.api.criar('locais', this.novo).subscribe(() => {
-      this.novo = {};
-      this.carregar();
-    });
-  }
-
-  excluir(id: number): void {
-    this.api.excluir('locais', id).subscribe(() => this.carregar());
-  }
+  nomeCliente(id: number): string { return this.clientes.find(c => c.id === id)?.nome || String(id); }
+  salvar(): void { this.api.criar<Local>('locais', this.form).subscribe(() => { this.form = { id: 0, nome: '', clienteId: 0, endereco: '' }; }); }
+  excluir(id: number): void { if (confirm('Excluir?')) this.api.excluir('locais', id).subscribe(); }
 }

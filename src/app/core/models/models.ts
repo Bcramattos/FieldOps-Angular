@@ -31,6 +31,7 @@ export interface ChecklistModelo {
 }
 
 export type StatusInspecao = 'Planejada' | 'Em andamento' | 'Aguardando revisão' | 'Aprovada' | 'Reprovada' | 'Cancelada';
+export type Prioridade = 'baixa' | 'media' | 'alta';
 
 export interface Inspecao {
   id: number;
@@ -40,7 +41,7 @@ export interface Inspecao {
   checklistModeloId: number;
   tecnico: string;
   data: string;
-  prioridade: 'baixa' | 'media' | 'alta';
+  prioridade: Prioridade;
   status: StatusInspecao;
   observacoes: string;
   naoConformidades: string[];
