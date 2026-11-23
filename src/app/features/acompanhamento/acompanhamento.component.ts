@@ -89,4 +89,4 @@ export class AcompanhamentoComponent implements OnInit {
     return this.clientes.find(c => c.id === id)?.nome || String(id);
   }
 }
-//essa tela é do acompanhamento
+// Tela de acompanhamento: lista as inspecoes com filtros por status, tecnico, cliente e periodo.
