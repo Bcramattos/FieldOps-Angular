@@ -24,7 +24,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
         <div class="col-md-3">
           <select class="form-select" [(ngModel)]="filtroTecnico">
             <option value="">Todos os técnicos</option>
-            @for (t of tecnicos; track t) { <option [value]="t">{{ t }}</option> }
+            @for (t of tecnicos(); track t) { <option [value]="t">{{ t }}</option> }
           </select>
         </div>
         <div class="col-md-3">

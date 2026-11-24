@@ -86,7 +86,7 @@ export class ModelosComponent implements OnInit {
   }
 
   duplicar(m: ChecklistModelo): void {
-    this.api.criar<ChecklistModelo>('modelos', { ...m, id: 0, nome: m.nome + ' (cópia)', status: 'rascunho', versao: '1.0' })
+    this.api.criar<ChecklistModelo>('modelos', { ...m, nome: m.nome + ' (cópia)', status: 'rascunho', versao: '1.0' })
       .subscribe(() => this.recarregar());
   }
 

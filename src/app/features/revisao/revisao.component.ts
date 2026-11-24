@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
-import { Inspecao } from '../../core/models/models';
+import { Inspecao, StatusInspecao } from '../../core/models/models';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
@@ -82,7 +82,7 @@ export class RevisaoComponent implements OnInit {
     this.api.obter<Inspecao>('inspecoes', id).subscribe(d => this.inspecao = d);
   }
 
-  decidir(status: string): void {
+  decidir(status: StatusInspecao): void {
     if (!this.inspecao) return;
     if (status === 'Reprovada' && !confirm('Reprovar a inspeção?')) return;
     this.api.editar<Inspecao>('inspecoes', this.inspecao.id, { status }).subscribe(() => {

@@ -47,3 +47,9 @@ export interface Inspecao {
   naoConformidades: string[];
   evidencias: string[];
 }
+
+export interface Metrica {
+  label: string;
+  valor: number;
+  classe: string;
+}
