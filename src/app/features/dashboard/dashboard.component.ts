@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
 import { Inspecao, Cliente, Metrica } from '../../core/models/models';
@@ -11,8 +11,6 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   template: `
     <div class="container-fluid p-4">
       <h1 class="h3 mb-4">Visão geral</h1>
-
-      <!-- ALERTAS PRIORITÁRIOS -->
       @for (a of alertas(); track a.texto) {
         <div class="alert mb-2 d-flex align-items-center gap-2"
              [class.alert-danger]="a.tipo === 'danger'"
@@ -22,8 +20,6 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
           <div>{{ a.texto }}</div>
         </div>
       }
-
-      <!-- CARDS DE INDICADORES -->
       <div class="row g-3 mb-4">
         @for (m of metricas(); track m.label) {
           <div class="col-md-3">
@@ -36,8 +32,6 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
           </div>
         }
       </div>
-
-      <!-- GRÁFICO DE ANDAMENTO (CSS puro) -->
       <div class="card mb-4">
         <div class="card-header"><i class="bi bi-bar-chart-fill"></i> Andamento das inspeções</div>
         <div class="card-body">
@@ -51,14 +45,13 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
                      [class.bg-warning]="m.classe === 'warning'"
                      [class.bg-info]="m.classe === 'info'"
                      [class.bg-success]="m.classe === 'success'"
+                     [class.bg-danger]="m.classe === 'danger'"
                      [style.width.%]="porcentagem(m.valor)"></div>
               </div>
             </div>
           }
         </div>
       </div>
-
-      <!-- INSPEÇÕES RECENTES -->
       <div class="card">
         <div class="card-header"><i class="bi bi-clock-history"></i> Inspeções recentes</div>
         <div class="card-body p-0">
@@ -90,49 +83,46 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 })
 export class DashboardComponent implements OnInit {
   private api = inject(ApiService);
-  inspecoes: Inspecao[] = [];
-  clientes: Cliente[] = [];
+  inspecoes = signal<Inspecao[]>([]);
+  clientes = signal<Cliente[]>([]);
 
-  ngOnInit(): void {
-    this.api.listar<Inspecao>('inspecoes').subscribe(d => this.inspecoes = d);
-    this.api.listar<Cliente>('clientes').subscribe(d => this.clientes = d);
-  }
-
-  metricas() {
-    const total = this.inspecoes.length || 1;
-    const agendadas = this.inspecoes.filter(i => i.status === 'Planejada').length;
-    const andamento = this.inspecoes.filter(i => i.status === 'Em andamento').length;
-    const revisao = this.inspecoes.filter(i => i.status === 'Aguardando revisão').length;
-    const concluidas = this.inspecoes.filter(i => i.status === 'Aprovada').length;
-    const nc = this.inspecoes.filter(i => (i.naoConformidades || []).length > 0).length;
+  metricas = computed((): Metrica[] => {
+    const total = this.inspecoes().length || 1;
+    const por = (s: string) => this.inspecoes().filter(i => i.status === s).length;
+    const nc = this.inspecoes().filter(i => (i.naoConformidades || []).length > 0).length;
     return [
-      { label: 'Agendadas', valor: agendadas, classe: 'primary' },
-      { label: 'Em andamento', valor: andamento, classe: 'warning' },
-      { label: 'Aguardando revisão', valor: revisao, classe: 'info' },
-      { label: 'Concluídas', valor: concluidas, classe: 'success' },
+      { label: 'Agendadas', valor: por('Planejada'), classe: 'primary' },
+      { label: 'Em andamento', valor: por('Em andamento'), classe: 'warning' },
+      { label: 'Aguardando revisão', valor: por('Aguardando revisão'), classe: 'info' },
+      { label: 'Concluídas', valor: por('Aprovada'), classe: 'success' },
       { label: 'Não conformidades', valor: nc, classe: 'danger' },
     ];
-  }
+  });
 
-  alertas() {
-    const atrasadas = this.inspecoes.filter(i => i.status === 'Reprovada' || (i.status === 'Planejada' && i.prioridade === 'alta'));
-    const revisao = this.inspecoes.filter(i => i.status === 'Aguardando revisão');
-    const out = [];
-    if (atrasadas.length) out.push({ tipo: 'danger', texto: `Prioridade alta: ${atrasadas.length} inspeção(ões) atrasada(s) ou com prioridade alta — verificar acompanhamento.` });
-    if (revisao.length) out.push({ tipo: 'warning', texto: `Atenção: ${revisao.length} inspeção(ões) aguardando revisão — fila pendente de aprovação.` });
+  alertas = computed(() => {
+    const alta = this.inspecoes().filter(i => i.prioridade === 'alta' && (i.status === 'Planejada' || i.status === 'Reprovada'));
+    const fila = this.inspecoes().filter(i => i.status === 'Aguardando revisão');
+    const out: { tipo: string; texto: string }[] = [];
+    if (alta.length) out.push({ tipo: 'danger', texto: 'Prioridade alta: ' + alta.length + ' inspecao(oes) com prioridade alta ou atrasada(s) — verificar acompanhamento.' });
+    if (fila.length) out.push({ tipo: 'warning', texto: 'Atencao: ' + fila.length + ' inspecao(oes) aguardando revisao — fila pendente de aprovacao.' });
     return out;
-  }
+  });
 
-  recentes() {
-    return [...this.inspecoes].sort((a, b) => b.data.localeCompare(a.data)).slice(0, 10);
+  recentes = computed(() =>
+    [...this.inspecoes()].sort((a, b) => (b.data || '').localeCompare(a.data || '')).slice(0, 10)
+  );
+
+  ngOnInit(): void {
+    this.api.listar<Inspecao>('inspecoes').subscribe(d => this.inspecoes.set(d));
+    this.api.listar<Cliente>('clientes').subscribe(d => this.clientes.set(d));
   }
 
   porcentagem(valor: number): number {
-    const total = this.inspecoes.length || 1;
+    const total = this.inspecoes().length || 1;
     return Math.round((valor / total) * 100);
   }
 
   nomeCliente(id: number): string {
-    return this.clientes.find(c => c.id === id)?.nome || String(id);
+    return this.clientes().find(c => c.id === id)?.nome || String(id);
   }
 }
