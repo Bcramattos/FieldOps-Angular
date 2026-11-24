@@ -208,7 +208,7 @@
       "tecnico": "Pedro Lima",
       "data": "2026-11-23",
       "prioridade": "baixa",
-      "status": "Aguardando revisão",
+      "status": "Aprovada",
       "observacoes": "Concluída ontem, aguardando revisão",
       "naoConformidades": [
         "Notebook sem etiqueta de inventário",
@@ -252,6 +252,11 @@
           "data": "2026-11-23",
           "status": "Aguardando revisão",
           "responsavel": "Pedro Lima"
+        },
+        {
+          "data": "2026-11-24",
+          "status": "Aprovada",
+          "responsavel": "Supervisor"
         }
       ]
     },

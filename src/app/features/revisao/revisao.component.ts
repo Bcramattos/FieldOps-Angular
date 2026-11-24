@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
-import { Inspecao, StatusInspecao } from '../../core/models/models';
+import { Inspecao, StatusInspecao, Cliente, Local, Equipamento } from '../../core/models/models';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
@@ -77,6 +77,10 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
               <img [src]="e" class="img-thumbnail me-2 mb-2" width="140" (error)="$any($event.target).outerHTML = '<a href=' + e + '>ver evidência</a>'">
             }
             @empty { <div class="text-muted">Sem evidências anexadas</div> }
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <input type="file" accept="image/*" class="form-control" style="max-width: 360px" (change)="onFileSelected($event)">
+              <span class="text-muted small">ou cole uma URL:</span>
+            </div>
             <div class="input-group mt-3" style="max-width: 480px">
               <input type="url" class="form-control" placeholder="URL da evidência (imagem)" [(ngModel)]="novaEvidencia">
               <button class="btn btn-outline-primary" (click)="addEvidencia()" [disabled]="!novaEvidencia">
@@ -122,6 +126,9 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   `
 })
 export class RevisaoComponent implements OnInit {
+  clientes: Cliente[] = [];
+  locais: Local[] = [];
+  equipamentos: Equipamento[] = [];
   private api = inject(ApiService);
   private route = inject(ActivatedRoute);
   inspecao: Inspecao | null = null;
@@ -130,6 +137,20 @@ export class RevisaoComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.api.obter<Inspecao>('inspecoes', id).subscribe(d => this.inspecao = d);
+    this.api.listar<Cliente>('clientes').subscribe(d => this.clientes = d);
+    this.api.listar<Local>('locais').subscribe(d => this.locais = d);
+    this.api.listar<Equipamento>('equipamentos').subscribe(d => this.equipamentos = d);
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.novaEvidencia = reader.result as string;
+      this.addEvidencia();
+    };
+    reader.readAsDataURL(file);
   }
 
   addEvidencia(): void {
@@ -140,6 +161,10 @@ export class RevisaoComponent implements OnInit {
       this.novaEvidencia = '';
     });
   }
+
+  nomeCliente(id: number): string { return this.clientes.find(c => c.id === id)?.nome || String(id); }
+  nomeLocal(id: number): string { return this.locais.find(l => l.id === id)?.nome || String(id); }
+  nomeEquipamento(id: number): string { return this.equipamentos.find(e => e.id === id)?.nome || String(id); }
 
   decidir(status: StatusInspecao): void {
     if (!this.inspecao) return;
