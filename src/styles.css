@@ -1,6 +1,44 @@
-/* FieldOps — estilos globais */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-
-body {
-  font-family: "Inter", sans-serif;
+:root {
+    --primary: #1747d4;
+    --primary-dark: #1036a7;
+    --primary-light: #eef3ff;
+    --background: #f5f7fb;
+    --surface: #ffffff;
+    --surface-light: #f8faff;
+    --border: #e5e9f2;
+    --border-dark: #d7ddea;
+    --text: #182230;
+    --text-secondary: #667085;
+    --text-light: #98a2b3;
+    --success: #12b76a;
+    --success-light: #ecfdf3;
+    --danger: #f04438;
+    --danger-light: #fef3f2;
+    --warning: #f79009;
+    --warning-light: #fffaeb;
+    --sidebar-width: 250px;
+    --topbar-height: 72px;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 2px rgba(16,24,40,.03), 0 4px 12px rgba(16,24,40,.04);
+}
+body { margin: 0; background: var(--background); color: var(--text); font-family: "Inter", sans-serif; font-size: 14px; }
+button, input, select { font-family: inherit; }
+a { text-decoration: none; }
+h1,h2,h3,h4,h5,p { overflow-wrap: break-word; }
+.app-shell { min-height: 100vh; }
+aside.sidebar { position: fixed; left: 0; top: 0; width: var(--sidebar-width); height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 1000; }
+aside.sidebar h5 { margin: 0; font-weight: 800; color: var(--primary); border-bottom: 1px solid var(--border); }
+main.flex-grow-1 { margin-left: var(--sidebar-width); padding: 25px 28px 40px; background: var(--background); min-height: 100vh; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card .card-header { background: var(--surface-light); border-bottom: 1px solid var(--border); font-weight: 600; color: var(--text); }
+.display-6.fw-bold { color: var(--primary); }
+.table > thead th { color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; border-bottom: 1px solid var(--border); }
+.btn-primary { background: var(--primary); border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+.sidebar .nav-item, .sidebar a { color: var(--text-secondary); border-radius: var(--radius-sm); padding: 8px 10px; display: flex; align-items: center; gap: 10px; }
+.sidebar .nav-item:hover, .sidebar a:hover { background: var(--primary-light); color: var(--primary); }
+@media (max-width: 768px) {
+    aside.sidebar { transform: translateX(-100%); transition: transform .25s ease; width: 260px; }
+    main.flex-grow-1 { margin-left: 0; padding: 16px 14px 32px; }
 }
