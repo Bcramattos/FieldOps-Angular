@@ -1,59 +1,30 @@
-# FieldOpsAngular
+﻿# FieldOps Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.3.
+Aplicação de inspeções de campo em Angular, com o layout e as folhas de estilo do compacto HTML/CSS/Bootstrap original.
 
-## Development server
-
-To start a local development server, run:
+## Executar
 
 ```bash
-ng serve
+npm install
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abra `http://localhost:4200`. O acesso é demonstrativo: use qualquer e-mail válido e uma senha. Escolha o perfil de demonstração na tela de login. Não há autenticação ou API conectada.
 
-## Code scaffolding
+## Módulos
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Dashboard com totais por estado, atrasos, fila de revisão, criticidade das não conformidades e tendências recentes.
+- Acompanhamento com filtros por texto, cliente, técnico, estado, prioridade e período; também permite iniciar, enviar para revisão e cancelar com justificativa.
+- Planejamento com seleção encadeada de modelo publicado, cliente, local e equipamento, além de técnico, supervisor, prazo e prioridade.
+- Revisão somente leitura das respostas do técnico, evidências, não conformidades e histórico; decisões exigem confirmação e reprovação exige motivo.
+- Gestão de usuários, clientes, locais e equipamentos com dados demonstrativos persistidos no navegador.
+- Construtor de modelos com seções, itens, tipos de resposta, validação, prévia e versões publicadas.
+- Não conformidades e histórico de auditoria com filtros e exportação CSV.
 
-```bash
-ng generate component component-name
-```
+## Dados e permissões
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+As alterações ficam no `localStorage` do navegador. O login, a redefinição de acesso e os perfis simulam os fluxos da interface; não enviam e-mail nem substituem autorização no servidor. Rotas e ações da interface respeitam os perfis selecionados. Para restaurar os dados iniciais, limpe os dados locais do site.
 
-```bash
-ng generate --help
-```
+## Tecnologias
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Angular, TypeScript, Bootstrap 5, Bootstrap Icons e CSS. As rotas usam Angular Router; não há backend.

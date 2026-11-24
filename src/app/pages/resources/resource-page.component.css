@@ -1,0 +1,25 @@
+.resource-metrics {
+  margin-top: 2px;
+}
+.resource-panel {
+  overflow: hidden;
+}
+.resource-panel .panel-header {
+  padding-block: 15px;
+}
+.details-cell {
+  max-width: 270px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.row-actions {
+  display: flex;
+  gap: 5px;
+}
+.row-actions .icon-action {
+  font-size: 12px;
+}
+.modal-footer .action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

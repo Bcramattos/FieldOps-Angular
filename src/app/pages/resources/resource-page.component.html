@@ -1,0 +1,216 @@
+<section class="page-heading">
+  <div class="page-heading-copy">
+    <p class="page-eyebrow">{{ config.eyebrow }}</p>
+    <h1>{{ config.title }}</h1>
+    <p>{{ config.description }}</p>
+  </div>
+  <div class="page-actions">
+    <button class="action-button" type="button" (click)="openCreate()">
+      <span>{{ kind === 'history' ? '↓' : '＋' }}</span
+      >{{ config.createLabel }}
+    </button>
+  </div>
+</section>
+
+<p class="inline-notice" *ngIf="notice" role="status">{{ notice }}</p>
+<section class="metric-grid resource-metrics">
+  <article class="metric-card">
+    <div class="metric-top">
+      <span class="metric-label">Total de registros</span><span class="metric-icon blue">▤</span>
+    </div>
+    <div class="metric-value">{{ records.length }}</div>
+    <div class="metric-foot">{{ config.title }}</div>
+  </article>
+  <article class="metric-card">
+    <div class="metric-top">
+      <span class="metric-label">Ativos</span><span class="metric-icon">✓</span>
+    </div>
+    <div class="metric-value">{{ activeCount }}</div>
+    <div class="metric-foot">Disponíveis para a operação</div>
+  </article>
+  <article class="metric-card">
+    <div class="metric-top">
+      <span class="metric-label">Precisam de atenção</span><span class="metric-icon amber">◷</span>
+    </div>
+    <div class="metric-value">{{ attentionCount }}</div>
+    <div class="metric-foot">Pendências em acompanhamento</div>
+  </article>
+  <article class="metric-card">
+    <div class="metric-top">
+      <span class="metric-label">Exibidos</span><span class="metric-icon blue">⌕</span>
+    </div>
+    <div class="metric-value">{{ filteredRecords.length }}</div>
+    <div class="metric-foot">Com os filtros atuais</div>
+  </article>
+</section>
+
+<article class="panel resource-panel">
+  <div class="panel-header">
+    <div class="panel-heading">
+      <h2 class="panel-title">{{ config.title }}</h2>
+      <p class="panel-subtitle">
+        {{ filteredRecords.length }} de {{ records.length }} {{ config.singular }}(s)
+      </p>
+    </div>
+    <span class="list-count">DADOS LOCAIS</span>
+  </div>
+  <div class="filter-bar">
+    <label class="search-field"
+      ><span>⌕</span
+      ><input
+        type="search"
+        [(ngModel)]="query"
+        [placeholder]="'Buscar ' + config.singular + ' por nome, código ou detalhes'"
+        [attr.aria-label]="'Buscar ' + config.singular" /></label
+    ><select
+      *ngIf="config.statuses.length"
+      class="filter-select"
+      [(ngModel)]="statusFilter"
+      aria-label="Filtrar por status"
+    >
+      <option>Todos os status</option>
+      <option *ngFor="let status of config.statuses">{{ status }}</option>
+    </select>
+  </div>
+  <div class="table-scroll">
+    <table class="ops-table">
+      <thead>
+        <tr>
+          <th>Referência</th>
+          <th>Nome</th>
+          <th>{{ config.categoryLabel }}</th>
+          <th>{{ config.detailsLabel }}</th>
+          <th>Status</th>
+          <th>Atualizado</th>
+          <th *ngIf="config.canEdit">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of filteredRecords">
+          <td class="mono">{{ record.reference }}</td>
+          <td>
+            <div class="table-primary">{{ record.title }}</div>
+          </td>
+          <td>{{ record.category }}</td>
+          <td class="details-cell">{{ record.details || '—' }}</td>
+          <td>
+            <span class="status-pill" [ngClass]="statusClass(record.status)">{{
+              record.status
+            }}</span>
+          </td>
+          <td>{{ record.updatedAt | date: 'd MMM, y' }}</td>
+          <td *ngIf="config.canEdit">
+            <div class="row-actions">
+              <button
+                class="icon-action"
+                type="button"
+                (click)="openEdit(record)"
+                [attr.aria-label]="'Editar ' + record.title"
+              >
+                ✎</button
+              ><button
+                class="icon-action danger"
+                type="button"
+                (click)="remove(record)"
+                [attr.aria-label]="'Remover ' + record.title"
+              >
+                ×
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!filteredRecords.length">
+          <td [attr.colspan]="config.canEdit ? 7 : 6">
+            <div class="empty-state">
+              <strong>Nenhum registro encontrado</strong>Ajuste os filtros ou adicione um novo
+              {{ config.singular }}.
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+<div class="modal-layer" *ngIf="modalOpen" (click)="modalOpen = false">
+  <section
+    class="modal-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="resource-modal-title"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="modal-header">
+      <h2 id="resource-modal-title">
+        {{ editingId ? 'Editar' : 'Adicionar' }} {{ config.singular }}
+      </h2>
+      <button class="modal-close" type="button" (click)="modalOpen = false" aria-label="Fechar">
+        ×
+      </button>
+    </header>
+    <form (ngSubmit)="save()" #resourceForm="ngForm">
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="record-reference">Código</label
+            ><input
+              class="field-control"
+              id="record-reference"
+              name="reference"
+              [(ngModel)]="draft.reference"
+              placeholder="Gerado automaticamente"
+            />
+          </div>
+          <div class="form-field">
+            <label for="record-category">{{ config.categoryLabel }}</label
+            ><input
+              class="field-control"
+              id="record-category"
+              name="category"
+              [(ngModel)]="draft.category"
+              placeholder="Categoria"
+            />
+          </div>
+          <div class="form-field form-field-wide">
+            <label for="record-title">Nome *</label
+            ><input
+              class="field-control"
+              id="record-title"
+              name="title"
+              [(ngModel)]="draft.title"
+              required
+              placeholder="Nome do registro"
+            />
+          </div>
+          <div class="form-field form-field-wide">
+            <label for="record-details">{{ config.detailsLabel }}</label
+            ><textarea
+              class="field-control"
+              id="record-details"
+              name="details"
+              [(ngModel)]="draft.details"
+              placeholder="Informações adicionais"
+            ></textarea>
+          </div>
+          <div class="form-field">
+            <label for="record-status">Status</label
+            ><select
+              class="field-control"
+              id="record-status"
+              name="status"
+              [(ngModel)]="draft.status"
+            >
+              <option *ngFor="let status of config.statuses">{{ status }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button class="secondary-button" type="button" (click)="modalOpen = false">Cancelar</button
+        ><button class="action-button" type="submit" [disabled]="resourceForm.invalid">
+          {{ editingId ? 'Salvar alterações' : 'Adicionar registro' }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>

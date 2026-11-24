@@ -1,0 +1,125 @@
+.review-metrics {
+  margin-top: 2px;
+}
+.queue-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #f0dfbd;
+  background: #fff9eb;
+  color: #936018;
+  border-radius: 16px;
+  padding: 7px 10px;
+  font-size: 9px;
+  font-weight: 700;
+}
+.queue-chip i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #daa64b;
+}
+.review-panel {
+  overflow: hidden;
+}
+.review-panel .panel-header {
+  padding-block: 16px;
+}
+.review-open {
+  min-height: 29px;
+  padding-inline: 9px;
+  font-size: 9px;
+}
+.dialog-reference {
+  color: #8995a0;
+  font-size: 9px;
+  margin: 4px 0 0;
+}
+.review-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 13px;
+  background: #f8faf9;
+  border: 1px solid #edf1ef;
+  border-radius: 7px;
+}
+.review-summary div {
+  display: grid;
+  gap: 4px;
+}
+.review-summary small {
+  color: #8d999f;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.review-summary strong {
+  color: #344657;
+  font-size: 10px;
+  font-weight: 600;
+}
+.checklist-block {
+  margin: 19px 0;
+}
+.checklist-block h3 {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 8px;
+  color: #344657;
+  font:
+    700 11px 'Manrope',
+    sans-serif;
+}
+.checklist-block h3 span {
+  color: #8c999f;
+  font:
+    500 8px 'DM Sans',
+    sans-serif;
+}
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f2f3;
+  color: #647280;
+  font-size: 9px;
+}
+.checklist-item:last-child {
+  border-bottom: 0;
+}
+.checkmark {
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  color: #23885f;
+  background: #e6f4eb;
+  border-radius: 50%;
+  font-size: 10px;
+}
+.checklist-item small {
+  margin-left: auto;
+  color: #33865f;
+  font-size: 8px;
+}
+.review-footer {
+  justify-content: space-between;
+}
+.review-footer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (max-width: 540px) {
+  .review-summary {
+    grid-template-columns: 1fr;
+  }
+  .review-footer {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+  .review-footer button {
+    width: 100%;
+  }
+}

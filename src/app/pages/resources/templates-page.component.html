@@ -1,0 +1,397 @@
+<main class="dashboard">
+
+
+            <!-- ================= PAGE HEADER ================= -->
+            <section class="page-header">
+
+                <div>
+
+                    <div class="breadcrumb-custom">
+                        Início
+                        <i class="bi bi-chevron-right"></i>
+                        Operações
+                        <i class="bi bi-chevron-right"></i>
+                        <strong>Modelos de Checklist</strong>
+                    </div>
+
+                    <div class="page-title-row">
+                        <div>
+                            <h1>Modelos de Checklist</h1>
+                            <p>Crie e gerencie modelos utilizados nas inspeções de campo</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="page-actions">
+                    <button class="btn btn-primary-custom">
+                        <i class="bi bi-plus-lg"></i>
+                        Novo modelo
+                    </button>
+                </div>
+
+            </section>
+
+
+            <!-- ================= RESUMO ================= -->
+            <section class="row g-3 mb-4">
+
+                <div class="col-12 col-sm-6 col-xl-4">
+                    <div class="kpi-card">
+                        <div class="kpi-top">
+                            <span>TOTAL DE MODELOS</span>
+                            <i class="bi bi-folder2-open"></i>
+                        </div>
+
+                        <div class="kpi-value">06</div>
+
+                        <div class="kpi-description">
+                            <span>Modelos cadastrados</span>
+                            <span>Todos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-4">
+                    <div class="kpi-card">
+                        <div class="kpi-top">
+                            <span>PUBLICADOS</span>
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+
+                        <div class="kpi-value">
+                            04
+                            <small class="success-text">ativos</small>
+                        </div>
+
+                        <div class="kpi-description">
+                            <span>Disponíveis para inspeção</span>
+                            <span class="success-text">Publicados</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-4">
+                    <div class="kpi-card">
+                        <div class="kpi-top">
+                            <span>RASCUNHOS</span>
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+
+                        <div class="kpi-value">02</div>
+
+                        <div class="kpi-description">
+                            <span>Aguardando publicação</span>
+                            <span>Em edição</span>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ================= LISTA DE MODELOS ================= -->
+            <section class="dashboard-card">
+
+                <div class="card-header-custom">
+
+                    <div>
+                        <div class="section-icon primary">
+                            <i class="bi bi-list-check"></i>
+                        </div>
+
+                        <div>
+                            <h2>Modelos cadastrados</h2>
+                            <p>Lista de checklists disponíveis na unidade</p>
+                        </div>
+                    </div>
+
+                    <span class="header-counter">06 modelos</span>
+
+                </div>
+
+
+                <!-- Filtros visuais -->
+                <div class="row g-2 mb-3">
+
+                    <div class="col-12 col-md-6">
+                        <div class="search-box models-search w-100">
+                            <i class="bi bi-search"></i>
+                            <input
+                                type="text"
+                                placeholder="Buscar modelo..."
+                                aria-label="Buscar modelo"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <select class="form-select models-filter" aria-label="Filtrar por status">
+                            <option selected>Todos os status</option>
+                            <option>Publicado</option>
+                            <option>Rascunho</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <select class="form-select models-filter" aria-label="Filtrar por equipamento">
+                            <option selected>Todos os equipamentos</option>
+                            <option>Compressores</option>
+                            <option>Bombas</option>
+                            <option>Geração</option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <div class="table-responsive">
+                    <table class="table operational-table" aria-label="Modelos de checklist cadastrados">
+
+                        <thead>
+                            <tr>
+                                <th>MODELO</th>
+                                <th>DESCRIÇÃO</th>
+                                <th>QTD. ITENS</th>
+                                <th>VERSÃO</th>
+                                <th>STATUS</th>
+                                <th class="text-end">AÇÕES</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>
+                                    <strong>Compressor Atlas Copco</strong>
+                                    <small class="os-code">CMP-AR-03</small>
+                                </td>
+                                <td>
+                                    Inspeção preventiva do compressor de ar
+                                </td>
+                                <td>12 itens</td>
+                                <td>v1.0</td>
+                                <td>
+                                    <span class="model-status published">
+                                        Publicado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table-actions justify-content-end">
+                                        <button class="icon-button" title="Visualizar">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="icon-button" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="icon-button" title="Duplicar">
+                                            <i class="bi bi-copy"></i>
+                                        </button>
+                                        <button class="icon-button" title="Publicar" disabled>
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                        <button class="icon-button" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <strong>Bomba Centrífuga</strong>
+                                    <small class="os-code">BC-RES-04</small>
+                                </td>
+                                <td>
+                                    Verificação de componentes e vedação
+                                </td>
+                                <td>15 itens</td>
+                                <td>v1.2</td>
+                                <td>
+                                    <span class="model-status published">
+                                        Publicado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table-actions justify-content-end">
+                                        <button class="icon-button" title="Visualizar">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="icon-button" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="icon-button" title="Duplicar">
+                                            <i class="bi bi-copy"></i>
+                                        </button>
+                                        <button class="icon-button" title="Publicar" disabled>
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                        <button class="icon-button" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <strong>Turbina SST-300</strong>
+                                    <small class="os-code">TB-GEN-02-B</small>
+                                </td>
+                                <td>
+                                    Checklist de inspeção do conjunto gerador
+                                </td>
+                                <td>18 itens</td>
+                                <td>v1.0</td>
+                                <td>
+                                    <span class="model-status draft">
+                                        Rascunho
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table-actions justify-content-end">
+                                        <button class="icon-button" title="Visualizar">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="icon-button" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="icon-button" title="Duplicar">
+                                            <i class="bi bi-copy"></i>
+                                        </button>
+                                        <button class="icon-button" title="Publicar">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                        <button class="icon-button" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <strong>Transformador Auxiliar</strong>
+                                    <small class="os-code">TR-AUX-01</small>
+                                </td>
+                                <td>
+                                    Inspeção visual e elétrica do transformador
+                                </td>
+                                <td>16 itens</td>
+                                <td>v1.0</td>
+                                <td>
+                                    <span class="model-status published">
+                                        Publicado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table-actions justify-content-end">
+                                        <button class="icon-button" title="Visualizar">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="icon-button" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="icon-button" title="Duplicar">
+                                            <i class="bi bi-copy"></i>
+                                        </button>
+                                        <button class="icon-button" title="Publicar" disabled>
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                        <button class="icon-button" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <strong>Ponte Rolante Demag</strong>
+                                    <small class="os-code">PR-CALD-01</small>
+                                </td>
+                                <td>
+                                    Conferência de segurança e operação
+                                </td>
+                                <td>14 itens</td>
+                                <td>v2.0</td>
+                                <td>
+                                    <span class="model-status draft">
+                                        Rascunho
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table-actions justify-content-end">
+                                        <button class="icon-button" title="Visualizar">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="icon-button" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="icon-button" title="Duplicar">
+                                            <i class="bi bi-copy"></i>
+                                        </button>
+                                        <button class="icon-button" title="Publicar">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                        <button class="icon-button" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <strong>Caldeira CD-01</strong>
+                                    <small class="os-code">BLR-CD-01</small>
+                                </td>
+                                <td>
+                                    Verificação de condições e componentes
+                                </td>
+                                <td>20 itens</td>
+                                <td>v1.3</td>
+                                <td>
+                                    <span class="model-status published">
+                                        Publicado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table-actions justify-content-end">
+                                        <button class="icon-button" title="Visualizar">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="icon-button" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="icon-button" title="Duplicar">
+                                            <i class="bi bi-copy"></i>
+                                        </button>
+                                        <button class="icon-button" title="Publicar" disabled>
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                        <button class="icon-button" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <div class="models-table-footer d-flex justify-content-between align-items-center pt-3">
+                    <small class="text-secondary">
+                        Exibindo 6 de 6 modelos
+                    </small>
+
+                    <small class="text-secondary">
+                        Dados demonstrativos
+                    </small>
+                </div>
+
+            </section>
+
+        </main>

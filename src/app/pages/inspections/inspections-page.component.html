@@ -1,0 +1,71 @@
+﻿<main class="dashboard">
+  <div class="container-fluid p-4">
+    <div class="mb-4">
+      <small class="text-secondary">FieldOps / Inspeções</small>
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-2">
+        <div>
+          <h2 class="fw-bold mb-1">Acompanhamento de Inspeções</h2>
+          <p class="text-secondary mb-0">Consulte e acompanhe o andamento das inspeções.</p>
+        </div>
+        <button *ngIf="canPlan" class="btn btn-primary" type="button" (click)="goToPlanning()"><i class="bi bi-plus-lg me-1"></i>Nova inspeção</button>
+      </div>
+    </div>
+
+    <p *ngIf="notice" class="alert alert-success py-2" role="status">{{ notice }}</p>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-secondary mb-1">Total de inspeções</p><h3 class="fw-bold mb-0">{{ inspections().length }}</h3></div></div></div>
+      <div class="col-md-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-secondary mb-1">Planejadas / em andamento</p><h3 class="fw-bold text-primary mb-0">{{ plannedCount + runningCount }}</h3><small>{{ plannedCount }} planejadas · {{ runningCount }} em andamento</small></div></div></div>
+      <div class="col-md-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-secondary mb-1">Aguardando revisão</p><h3 class="fw-bold text-warning mb-0">{{ reviewCount }}</h3><button class="btn btn-link p-0" type="button" (click)="reviewOnly = !reviewOnly">{{ reviewOnly ? 'Remover filtro' : 'Ver pendências' }}</button></div></div></div>
+      <div class="col-md-3"><div class="card border-0 shadow-sm h-100"><div class="card-body"><p class="text-secondary mb-1">Inspeções atrasadas</p><h3 class="fw-bold text-danger mb-0">{{ overdueCount }}</h3><button class="btn btn-link text-danger p-0" type="button" (click)="overdueOnly = !overdueOnly">{{ overdueOnly ? 'Remover filtro' : 'Ver atrasadas' }}</button></div></div></div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="mb-4"><h5 class="fw-bold mb-1"><i class="bi bi-list-check me-2"></i>Lista de Inspeções</h5><small class="text-secondary">{{ filteredInspections.length }} de {{ inspections().length }} registros. Use os filtros para localizar uma inspeção.</small></div>
+        <div class="row g-3 mb-4">
+          <div class="col-lg-4"><label for="inspectionQuery" class="form-label">Pesquisar inspeção</label><div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input id="inspectionQuery" name="inspectionQuery" class="form-control" [(ngModel)]="query" placeholder="Código, inspeção, cliente ou responsável..."></div></div>
+          <div class="col-md-4 col-lg-2"><label for="statusFilter" class="form-label">Estado</label><select id="statusFilter" name="statusFilter" class="form-select" [(ngModel)]="statusFilter"><option value="">Todos os estados</option><option *ngFor="let status of ['Planejada','Em andamento','Aguardando revisão','Aprovada','Reprovada','Cancelada']">{{ status }}</option></select></div>
+          <div class="col-md-4 col-lg-2"><label for="clientFilter" class="form-label">Cliente</label><select id="clientFilter" name="clientFilter" class="form-select" [(ngModel)]="clientFilter"><option value="">Todos os clientes</option><option *ngFor="let client of clients">{{ client }}</option></select></div>
+          <div class="col-md-4 col-lg-2"><label for="technicianFilter" class="form-label">Técnico</label><select id="technicianFilter" name="technicianFilter" class="form-select" [(ngModel)]="technicianFilter"><option value="">Todos os técnicos</option><option *ngFor="let person of technicians">{{ person }}</option></select></div>
+          <div class="col-md-4 col-lg-2"><label for="priorityFilter" class="form-label">Prioridade</label><select id="priorityFilter" name="priorityFilter" class="form-select" [(ngModel)]="priorityFilter"><option value="">Todas</option><option>Baixa</option><option>Normal</option><option>Alta</option><option>Crítica</option></select></div>
+          <div class="col-md-4 col-lg-2"><label for="fromDate" class="form-label">Prevista de</label><input id="fromDate" name="fromDate" type="date" class="form-control" [(ngModel)]="fromDate"></div>
+          <div class="col-md-4 col-lg-2"><label for="toDate" class="form-label">Prevista até</label><input id="toDate" name="toDate" type="date" class="form-control" [(ngModel)]="toDate"></div>
+          <div class="col-md-4 col-lg-3 d-flex align-items-end gap-3"><label class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="overdueOnly" name="overdueOnly"><span class="form-check-label">Atrasadas</span></label><label class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="reviewOnly" name="reviewOnly"><span class="form-check-label">Aguardando revisão</span></label></div>
+          <div class="col-md-4 col-lg-2 d-flex align-items-end"><button class="btn btn-outline-secondary w-100" type="button" (click)="clearFilters()"><i class="bi bi-arrow-counterclockwise me-1"></i>Limpar</button></div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light"><tr><th>Código / inspeção</th><th>Cliente / local</th><th>Equipamento</th><th>Técnico</th><th>Prioridade</th><th>Data prevista</th><th>Estado / progresso</th><th>Última atualização</th><th class="text-center">Ações</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let item of filteredInspections">
+                <td><strong>{{ item.reference }}</strong><div>{{ item.title }}</div></td>
+                <td>{{ item.client }}<small class="d-block text-secondary">{{ item.location }}</small></td>
+                <td>{{ item.equipment }}</td>
+                <td>{{ item.assignedTo }}</td>
+                <td><span class="badge" [ngClass]="item.priority === 'Crítica' || item.priority === 'Alta' ? 'text-bg-danger' : 'text-bg-secondary'">{{ item.priority || 'Normal' }}</span></td>
+                <td>{{ formatDate(item.dueDate) }}<small *ngIf="isOverdue(item)" class="d-block text-danger">Atrasada</small></td>
+                <td><span class="badge" [ngClass]="statusClass(item.status)">{{ item.status }}</span><div class="progress mt-2" style="height:5px"><div class="progress-bar" [style.width.%]="item.progress"></div></div><small class="text-secondary">{{ item.progress }}%</small></td><td>{{ (item.lastUpdated || item.dueDate) | date:'short' }}</td>
+                <td class="text-center"><div class="d-inline-flex gap-1"><button class="btn btn-sm btn-outline-primary" type="button" (click)="open(item)" aria-label="Ver detalhes"><i class="bi bi-eye"></i></button><button *ngIf="item.status === 'Planejada' && canOperate(item)" class="btn btn-sm btn-outline-success" type="button" (click)="start(item)" aria-label="Iniciar inspeção"><i class="bi bi-play"></i></button><button *ngIf="item.status === 'Em andamento' && canOperate(item)" class="btn btn-sm btn-outline-warning" type="button" (click)="submitForReview(item)" aria-label="Enviar para revisão"><i class="bi bi-send"></i></button><button *ngIf="canPlan && !['Aprovada','Reprovada','Cancelada'].includes(item.status)" class="btn btn-sm btn-outline-danger" type="button" (click)="askCancel(item)" aria-label="Cancelar inspeção"><i class="bi bi-x-circle"></i></button></div></td>
+              </tr>
+              <tr *ngIf="!filteredInspections.length"><td colspan="9" class="text-center text-secondary py-5">Nenhuma inspeção corresponde aos filtros.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="modal d-block" tabindex="-1" *ngIf="selected" role="dialog" aria-modal="true" aria-labelledby="inspectionDetailTitle" style="background:rgba(20,30,45,.45)">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><div><h5 id="inspectionDetailTitle" class="modal-title">{{ selected.reference }} · {{ selected.title }}</h5><small class="text-secondary">{{ selected.client }} · {{ selected.location }} · {{ selected.equipment }}</small></div><button type="button" class="btn-close" (click)="selected = null" aria-label="Fechar"></button></div>
+    <div class="modal-body"><div class="row g-3 mb-3"><div class="col-md-3"><strong>Técnico</strong><div>{{ selected.assignedTo }}</div></div><div class="col-md-3"><strong>Prevista</strong><div>{{ formatDate(selected.dueDate) }}</div></div><div class="col-md-3"><strong>Prioridade</strong><div>{{ selected.priority || 'Normal' }}</div></div><div class="col-md-3"><strong>Estado</strong><div>{{ selected.status }}</div></div></div><p *ngIf="selected.instructions"><strong>Instruções:</strong> {{ selected.instructions }}</p>
+      <h6 class="fw-bold mt-4">Respostas do checklist</h6><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Seção / item</th><th>Resposta do técnico</th><th>Observação</th><th>Evidências</th></tr></thead><tbody><tr *ngFor="let answer of selected.answers"><td>{{ answer.section }}<div>{{ answer.question }}</div></td><td>{{ answer.response }}</td><td>{{ answer.observation || '—' }}</td><td><span *ngFor="let file of answer.evidence" class="badge text-bg-light me-1">{{ file }}</span></td></tr><tr *ngIf="!selected.answers?.length"><td colspan="4" class="text-secondary">Respostas detalhadas disponíveis na tela de revisão quando o técnico enviar o checklist.</td></tr></tbody></table></div>
+      <h6 class="fw-bold mt-4">Histórico de estado</h6><ul class="list-group"><li class="list-group-item d-flex justify-content-between gap-3" *ngFor="let event of selected.stateHistory"><span><strong>{{ event.state }}</strong> · {{ event.by }} <small *ngIf="event.reason" class="d-block text-secondary">{{ event.reason }}</small></span><small>{{ event.at | date:'short' }}</small></li></ul>
+    </div><div class="modal-footer"><button class="btn btn-secondary" type="button" (click)="selected = null">Fechar</button></div>
+  </div></div>
+</div>
+<div class="modal d-block" tabindex="-1" *ngIf="cancelTarget" role="dialog" aria-modal="true" aria-labelledby="cancelTitle" style="background:rgba(20,30,45,.45)"><div class="modal-dialog"><div class="modal-content"><form (ngSubmit)="cancel()"><div class="modal-header"><h5 class="modal-title" id="cancelTitle">Cancelar {{ cancelTarget.reference }}</h5><button type="button" class="btn-close" (click)="cancelTarget = null" aria-label="Fechar"></button></div><div class="modal-body"><label class="form-label" for="cancelReason">Justificativa obrigatória</label><textarea id="cancelReason" name="cancelReason" class="form-control" rows="3" [(ngModel)]="cancelReason" required></textarea></div><div class="modal-footer"><button type="button" class="btn btn-secondary" (click)="cancelTarget = null">Voltar</button><button class="btn btn-danger" type="submit" [disabled]="!cancelReason.trim()">Confirmar cancelamento</button></div></form></div></div></div>
+

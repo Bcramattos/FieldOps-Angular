@@ -1,0 +1,106 @@
+﻿<main class="page-content">
+  <section class="page-header">
+    <div><span class="page-eyebrow"><i class="bi bi-calendar3"></i> GESTÃO DE INSPEÇÕES</span><h1>Planejamento</h1><p>Organize, distribua e acompanhe as inspeções programadas da sua operação.</p></div>
+    <button *ngIf="canPlan" type="button" class="btn-new-plan" (click)="openCreate()"><i class="bi bi-plus-lg"></i>Novo planejamento</button>
+  </section>
+
+  <p *ngIf="notice" class="alert alert-success py-2" role="status">{{ notice }}</p>
+  <section class="stats-grid">
+    <div class="stat-card"><div class="stat-info"><span>Inspeções programadas</span><h3>{{ scheduledCount }}</h3><small>Em aberto na operação</small></div><div class="stat-icon blue"><i class="bi bi-calendar-check"></i></div></div>
+    <div class="stat-card"><div class="stat-info"><span>Agendadas para hoje</span><h3>{{ todayCount }}</h3><small>Inspeções previstas</small></div><div class="stat-icon orange"><i class="bi bi-clock"></i></div></div>
+    <div class="stat-card"><div class="stat-info"><span>Em atraso</span><h3>{{ overdueCount }}</h3><small>Requerem atenção</small></div><div class="stat-icon red"><i class="bi bi-exclamation-circle"></i></div></div>
+    <div class="stat-card"><div class="stat-info"><span>Concluídas no mês</span><h3>{{ completedCount }}</h3><small>Finalizadas neste mês</small></div><div class="stat-icon green"><i class="bi bi-check-circle"></i></div></div>
+  </section>
+
+  <section class="calendar-panel">
+    <div class="panel-header"><div><h5>Agenda de inspeções</h5><p>Selecione um dia para consultar as atividades programadas</p></div><div class="calendar-actions"><button class="calendar-nav" type="button" (click)="moveWeek(-1)" aria-label="Semana anterior"><i class="bi bi-chevron-left"></i></button><strong>{{ weekLabel }}</strong><button class="calendar-nav" type="button" (click)="moveWeek(1)" aria-label="Próxima semana"><i class="bi bi-chevron-right"></i></button><button class="btn-today" type="button" (click)="goToday()">Hoje</button></div></div>
+    <div class="calendar-grid">
+      <div *ngFor="let day of weekDays" class="calendar-day" [class.selected-day]="selectedDate === day.key" [class.today]="day.isToday" role="button" tabindex="0" [attr.aria-pressed]="selectedDate === day.key" (click)="selectDay(day)" (keydown.enter)="selectDay(day)">
+        <div class="day-header"><span>{{ day.label }}</span><strong>{{ day.day }}</strong></div>
+        <div class="day-events"><div *ngFor="let item of day.inspections" class="calendar-event" [ngClass]="item.priority === 'Crítica' ? 'orange-event' : item.status === 'Aprovada' ? 'green-event' : item.status === 'Aguardando revisão' ? 'purple-event' : 'blue-event'"><strong>{{ item.dueDate === selectedDate ? 'DIA' : item.priority || 'INS' }}</strong><span>{{ item.title }}</span><small>{{ item.equipment }} · {{ item.assignedTo }}</small></div><div *ngIf="!day.inspections.length" class="calendar-empty"><i class="bi bi-dash"></i>Sem atividades</div></div>
+      </div>
+    </div>
+    <div class="calendar-legend"><span><i class="legend-dot blue-dot"></i>Planejada / em andamento</span><span><i class="legend-dot green-dot"></i>Aprovada</span><span><i class="legend-dot orange-dot"></i>Prioridade crítica</span><span><i class="legend-dot purple-dot"></i>Aguardando revisão</span></div>
+  </section>
+
+  <section class="inspections-panel">
+    <div class="panel-header"><div><h5>Inspeções do dia</h5><p>{{ selectedDate | date:'fullDate':'':'pt-BR' }}</p></div><a routerLink="/inspections" class="btn-view-all">Ver acompanhamento <i class="bi bi-arrow-right"></i></a></div>
+    <div class="filters-row"><div class="filter-search"><i class="bi bi-search"></i><input name="planningQuery" [(ngModel)]="query" type="search" placeholder="Buscar inspeção, cliente, equipamento ou responsável"></div><select name="planningStatus" class="filter-select" [(ngModel)]="statusFilter"><option value="">Todos os status</option><option>Planejada</option><option>Em andamento</option><option>Aguardando revisão</option><option>Aprovada</option><option>Reprovada</option><option>Cancelada</option></select><select name="planningTechnician" class="filter-select" [(ngModel)]="technicianFilter"><option value="">Todos os responsáveis</option><option *ngFor="let user of activeTechnicians">{{ user.name }}</option></select></div>
+    <div class="table-responsive"><table class="planning-table"><thead><tr><th>INSPEÇÃO</th><th>EQUIPAMENTO</th><th>LOCAL</th><th>RESPONSÁVEL</th><th>DATA PREVISTA</th><th>STATUS</th><th>PRIORIDADE</th></tr></thead><tbody>
+      <tr *ngFor="let item of filteredInspections"><td><div class="inspection-name"><strong>{{ item.title }}</strong><small>{{ item.reference }}</small></div></td><td><span class="equipment-code">{{ item.equipment }}</span><small class="cell-subtitle">{{ item.client }}</small></td><td><span>{{ item.location }}</span></td><td><div class="responsible"><div class="avatar blue-avatar">{{ initials(item.assignedTo) }}</div><span>{{ item.assignedTo }}</span></div></td><td><div class="date-cell"><strong>{{ formatDate(item.dueDate) }}</strong><small>{{ item.status === 'Aguardando revisão' ? 'Enviada para revisão' : 'Data prevista' }}</small></div></td><td><span class="status-badge" [ngClass]="statusClass(item.status)"><i class="bi bi-circle-fill"></i>{{ item.status }}</span></td><td>{{ item.priority || 'Normal' }}</td></tr>
+      <tr *ngIf="!filteredInspections.length"><td colspan="7" class="text-center text-secondary py-4">Não há inspeções para este dia com os filtros selecionados.</td></tr>
+    </tbody></table></div>
+    <div class="table-footer"><span>Exibindo <strong>{{ filteredInspections.length }}</strong> inspeções para o dia</span><span *ngIf="!canPlan" class="text-muted">Seu perfil pode consultar a agenda.</span></div>
+  </section>
+  <footer class="page-footer"><span>FieldOps Enterprise System</span><span>© 2026 · Plataforma de Inspeção em Campo</span></footer>
+</main>
+
+<div class="inspection-modal-backdrop" *ngIf="modalOpen" role="presentation">
+  <section class="inspection-create-dialog" role="dialog" aria-modal="true" aria-labelledby="planningModalTitle">
+    <form (ngSubmit)="createInspection()">
+      <header class="inspection-create-header">
+        <div class="inspection-create-icon"><i class="bi bi-clipboard-plus"></i></div>
+        <div class="inspection-create-heading">
+          <span class="inspection-create-eyebrow">PLANEJAMENTO DE CAMPO</span>
+          <h2 id="planningModalTitle">Nova inspeção</h2>
+          <p>Defina o checklist, o local e os responsáveis pela execução.</p>
+        </div>
+        <button type="button" class="inspection-create-close" (click)="modalOpen = false" aria-label="Fechar"><i class="bi bi-x-lg"></i></button>
+      </header>
+
+      <div class="inspection-create-content">
+        <div *ngIf="error" class="inspection-form-error" role="alert"><i class="bi bi-exclamation-circle"></i><span>{{ error }}</span></div>
+        <div class="inspection-form-layout">
+          <div class="inspection-form-main">
+            <section class="inspection-form-section">
+              <div class="inspection-section-title"><span>01</span><div><h3>Modelo da inspeção</h3><p>O modelo publicado define o checklist aplicado em campo.</p></div></div>
+              <div class="inspection-field-grid two-columns">
+                <label class="inspection-field"><span>Modelo publicado <b>*</b></span><select name="modelId" [(ngModel)]="modelId" (ngModelChange)="modelChanged()" required><option value="">Selecione um modelo</option><option *ngFor="let model of publishedModels" [value]="model.id">{{ model.title }} · v{{ model.version }}</option></select></label>
+                <label class="inspection-field"><span>Título da inspeção <b>*</b></span><input name="inspectionTitle" [(ngModel)]="draft.title" required placeholder="Ex.: Inspeção preventiva mensal"></label>
+              </div>
+            </section>
+
+            <section class="inspection-form-section">
+              <div class="inspection-section-title"><span>02</span><div><h3>Cliente e ativo</h3><p>Local e equipamento são filtrados conforme a seleção anterior.</p></div></div>
+              <div class="inspection-field-grid three-columns">
+                <label class="inspection-field"><span>Cliente <b>*</b></span><select name="clientId" [(ngModel)]="clientId" (ngModelChange)="clientChanged()" required><option value="">Selecione</option><option *ngFor="let client of clients" [value]="client.id">{{ client.title }}</option></select></label>
+                <label class="inspection-field"><span>Local <b>*</b></span><select name="locationId" [(ngModel)]="locationId" (ngModelChange)="locationChanged()" [disabled]="!clientId" required><option value="">{{ clientId ? 'Selecione o local' : 'Escolha um cliente primeiro' }}</option><option *ngFor="let location of locations" [value]="location.id">{{ location.title }}</option></select></label>
+                <label class="inspection-field"><span>Equipamento <b>*</b></span><select name="equipmentId" [(ngModel)]="equipmentId" (ngModelChange)="equipmentChanged()" [disabled]="!locationId" required><option value="">{{ locationId ? 'Selecione o equipamento' : 'Escolha um local primeiro' }}</option><option *ngFor="let item of equipment" [value]="item.id">{{ item.reference }} · {{ item.title }}</option></select></label>
+              </div>
+            </section>
+
+            <section class="inspection-form-section">
+              <div class="inspection-section-title"><span>03</span><div><h3>Responsáveis</h3><p>Atribua a execução e defina quem acompanhará a inspeção.</p></div></div>
+              <div class="inspection-field-grid two-columns">
+                <label class="inspection-field"><span>Técnico responsável <b>*</b></span><select name="technicianId" [(ngModel)]="technicianId" (ngModelChange)="technicianChanged()" required><option value="">Selecione um técnico ativo</option><option *ngFor="let user of activeTechnicians" [value]="user.id">{{ user.name }} · {{ user.unit }}</option></select></label>
+                <label class="inspection-field"><span>Supervisor <b>*</b></span><select name="supervisorId" [(ngModel)]="supervisorId" (ngModelChange)="supervisorChanged()" required><option value="">Selecione um supervisor</option><option *ngFor="let user of activeSupervisors" [value]="user.id">{{ user.name }}</option></select></label>
+              </div>
+            </section>
+
+            <section class="inspection-form-section last-section">
+              <div class="inspection-section-title"><span>04</span><div><h3>Prazo e instruções</h3><p>Defina quando deve ser realizada e inclua orientações úteis.</p></div></div>
+              <div class="inspection-field-grid two-columns">
+                <label class="inspection-field"><span>Data prevista <b>*</b></span><input name="dueDate" type="date" [(ngModel)]="draft.dueDate" required></label>
+                <label class="inspection-field"><span>Prioridade</span><select name="priority" [(ngModel)]="draft.priority"><option>Baixa</option><option>Normal</option><option>Alta</option><option>Crítica</option></select></label>
+                <label class="inspection-field full-width"><span>Instruções para o técnico</span><textarea name="instructions" rows="3" [(ngModel)]="draft.instructions" placeholder="Acesso, condições de segurança ou pontos de atenção"></textarea></label>
+              </div>
+            </section>
+          </div>
+
+          <aside class="inspection-create-summary">
+            <span class="summary-label">RESUMO</span><h3>Nova ordem</h3><p>Confira as informações selecionadas.</p>
+            <div class="summary-item"><i class="bi bi-card-checklist"></i><div><small>Modelo</small><strong>{{ selectedModelName }}</strong></div></div>
+            <div class="summary-item"><i class="bi bi-buildings"></i><div><small>Cliente</small><strong>{{ selectedClientName }}</strong></div></div>
+            <div class="summary-item"><i class="bi bi-geo-alt"></i><div><small>Local e equipamento</small><strong>{{ selectedLocationName }}</strong><strong>{{ selectedEquipmentName }}</strong></div></div>
+            <div class="summary-item"><i class="bi bi-person-check"></i><div><small>Técnico</small><strong>{{ selectedTechnicianName }}</strong></div></div>
+            <div class="summary-divider"></div>
+            <div class="summary-priority"><span>Prioridade</span><strong [ngClass]="draft.priority === 'Crítica' || draft.priority === 'Alta' ? 'priority-high' : ''">{{ draft.priority || 'Normal' }}</strong></div>
+            <div class="summary-note"><i class="bi bi-info-circle"></i> A inspeção ficará disponível no acompanhamento após a atribuição.</div>
+          </aside>
+        </div>
+      </div>
+
+      <footer class="inspection-create-footer"><span><b>*</b> Campos obrigatórios</span><div><button type="button" class="create-cancel-button" (click)="modalOpen = false">Cancelar</button><button type="submit" class="create-submit-button" [disabled]="!canPlan"><i class="bi bi-check2"></i>Criar e atribuir</button></div></footer>
+    </form>
+  </section>
+</div>

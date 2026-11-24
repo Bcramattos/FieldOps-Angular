@@ -1,1 +1,194 @@
-/* You can add global styles to this file, and also import other style files */
+/* Ajustes de extensão dos módulos Angular. O tema principal vem do protótipo FieldOps. */
+app-root,
+app-main-layout,
+app-dashboard-page,
+app-inspections-page,
+app-planning-page,
+app-review-page,
+app-resource-page,
+app-users-page,
+app-template-builder-page,
+app-forbidden-page {
+  display: block;
+}
+
+.fieldops-extension-card {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e5e9f2);
+  border-radius: var(--radius, 12px);
+  box-shadow: var(--shadow);
+}
+
+.fieldops-inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fieldops-access-denied {
+  min-height: 55vh;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.fo-state-summary {
+  margin: -16px 0 22px;
+  padding: 14px 18px;
+  border: 1px solid var(--border, #e5e9f2);
+  border-radius: var(--radius, 12px);
+  background: var(--surface, #fff);
+}
+
+.fo-state-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 18px;
+  margin-top: 8px;
+  color: var(--text-secondary, #667085);
+  font-size: 12px;
+}
+
+.fo-state-counts strong {
+  color: var(--text, #172b4d);
+  font-size: 14px;
+}
+
+.calendar-day.selected-day {
+  outline: 2px solid var(--primary, #1747d4);
+  outline-offset: -2px;
+  background: #f5f8ff;
+}
+
+.status-badge.in-progress { background: #eef4ff; color: #315cc9; }
+.status-badge.pending { background: #fffaeb; color: #b54708; }
+.status-badge.completed { background: #ecfdf3; color: #027a48; }
+.status-badge.overdue { background: #fef3f2; color: #b42318; }
+.status-badge.cancelled { background: #f2f4f7; color: #475467; }
+
+.fieldops-access-denied .code {
+  color: var(--primary);
+  font: 700 12px "JetBrains Mono", monospace;
+  letter-spacing: 0.12em;
+}
+
+.fieldops-access-denied h1 {
+  margin: 10px 0 8px;
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.fieldops-access-denied p {
+  max-width: 430px;
+  margin: 0 auto 20px;
+  color: var(--text-secondary);
+}
+
+.extension-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid var(--border, #e5e9f2);
+  border-radius: 6px;
+  background: var(--surface-light, #f8faff);
+  color: var(--text-secondary, #667085);
+  font: 600 9px "JetBrains Mono", monospace;
+}
+
+.extension-badge.danger {
+  border-color: #fecdca;
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.extension-badge.warning {
+  border-color: #fedf89;
+  background: #fffaeb;
+  color: #93370d;
+}
+
+.builder-modal .modal-dialog,
+.fieldops-modal .modal-dialog {
+  max-width: 780px;
+}
+
+.builder-modal .modal-body,
+.fieldops-modal .modal-body {
+  max-height: min(72vh, 760px);
+  overflow: auto;
+}
+
+.builder-section-card {
+  border: 1px solid var(--border, #e5e9f2);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.builder-item-card {
+  border-left: 3px solid var(--primary, #1747d4);
+  background: var(--surface-light, #f8faff);
+}
+
+.builder-preview .form-check-input:disabled {
+  opacity: 1;
+}
+
+.inspection-priority-critical {
+  color: #b42318;
+  background: #fef3f2;
+}
+
+.inspection-priority-high {
+  color: #b54708;
+  background: #fffaeb;
+}
+
+.inspection-priority-normal {
+  color: #175cd3;
+  background: #eff8ff;
+}
+
+.inspection-priority-low {
+  color: #027a48;
+  background: #ecfdf3;
+}
+
+.fieldops-confirmation-text {
+  color: var(--text-secondary, #667085);
+  line-height: 1.6;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: right;
+}
+
+.profile-trigger:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.forgot-password {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--primary);
+  font: inherit;
+  font-size: 12px;
+}
+
+.btn-login:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
