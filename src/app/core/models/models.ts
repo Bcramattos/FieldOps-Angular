@@ -1,3 +1,15 @@
+export interface ChecklistItem {
+  item: string;
+  resposta: 'ok' | 'nao_ok' | 'na';
+  observacao?: string;
+}
+
+export interface HistoricoItem {
+  data: string;
+  status: string;
+  responsavel: string;
+}
+
 export interface Cliente {
   id: number;
   nome: string;
@@ -46,6 +58,8 @@ export interface Inspecao {
   observacoes: string;
   naoConformidades: string[];
   evidencias: string[];
+  checklist?: ChecklistItem[];
+  historico?: HistoricoItem[];
 }
 
 export interface Metrica {

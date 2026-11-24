@@ -17,18 +17,46 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
           <h1 class="h3 mb-0">Revisão — {{ i.codigo }}</h1>
           <span class="badge fs-6" [class.bg-warning]="i.status === 'Aguardando revisão'"
                 [class.bg-success]="i.status === 'Aprovada'"
-                [class.bg-danger]="i.status === 'Reprovada'">{{ i.status }}</span>
+                [class.bg-danger]="i.status === 'Reprovada'"
+                [class.bg-secondary]="i.status === 'Planejada'">{{ i.status }}</span>
         </div>
 
         <div class="card mb-3">
           <div class="card-header"><i class="bi bi-info-circle"></i> Informações gerais</div>
           <div class="card-body">
             <div class="row">
-              <div class="col-md-6"><strong>Técnico:</strong> {{ i.tecnico }}</div>
+              <div class="col-md-4"><strong>Técnico:</strong> {{ i.tecnico }}</div>
               <div class="col-md-3"><strong>Data:</strong> {{ i.data }}</div>
-              <div class="col-md-3"><strong>Prioridade:</strong> {{ i.prioridade }}</div>
+              <div class="col-md-2"><strong>Prioridade:</strong> {{ i.prioridade }}</div>
+              <div class="col-md-3"><strong>Status:</strong> {{ i.status }}</div>
             </div>
             <div class="mt-2"><strong>Observações do técnico:</strong> {{ i.observacoes || '—' }}</div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header"><i class="bi bi-check2-square"></i> Checklist</div>
+          <div class="card-body p-0">
+            @if (i.checklist && i.checklist.length > 0) {
+              <table class="table mb-0">
+                <thead><tr><th>Item</th><th>Resposta</th><th>Observação</th></tr></thead>
+                <tbody>
+                  @for (c of i.checklist; track c.item) {
+                    <tr>
+                      <td>{{ c.item }}</td>
+                      <td><span class="badge" [class.bg-success]="c.resposta === 'ok'"
+                          [class.bg-danger]="c.resposta === 'nao_ok'"
+                          [class.bg-secondary]="c.resposta === 'na'">
+                          {{ c.resposta === 'ok' ? 'OK' : c.resposta === 'nao_ok' ? 'Não conforme' : 'N/A' }}
+                        </span></td>
+                      <td>{{ c.observacao || '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <div class="p-3 text-muted"><i class="bi bi-inbox"></i> Checklist não respondido</div>
+            }
           </div>
         </div>
 
@@ -45,14 +73,35 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
         <div class="card mb-3">
           <div class="card-header"><i class="bi bi-camera"></i> Evidências</div>
           <div class="card-body">
-            @for (e of i.evidencias; track e) { <img [src]="e" class="img-thumbnail me-2" width="140"> }
+            @for (e of i.evidencias; track e) {
+              <img [src]="e" class="img-thumbnail me-2 mb-2" width="140" (error)="$any($event.target).outerHTML = '<a href=' + e + '>ver evidência</a>'">
+            }
             @empty { <div class="text-muted">Sem evidências anexadas</div> }
+            <div class="input-group mt-3" style="max-width: 480px">
+              <input type="url" class="form-control" placeholder="URL da evidência (imagem)" [(ngModel)]="novaEvidencia">
+              <button class="btn btn-outline-primary" (click)="addEvidencia()" [disabled]="!novaEvidencia">
+                <i class="bi bi-plus-lg"></i> Adicionar
+              </button>
+            </div>
           </div>
         </div>
 
         <div class="card mb-3">
           <div class="card-header"><i class="bi bi-clock-history"></i> Histórico de status</div>
-          <div class="card-body"><div class="text-muted">Histórico registrado nas mudanças de status da inspeção.</div></div>
+          <div class="card-body p-0">
+            @if (i.historico && i.historico.length > 0) {
+              <table class="table mb-0">
+                <thead><tr><th>Data</th><th>Status</th><th>Responsável</th></tr></thead>
+                <tbody>
+                  @for (h of i.historico; track h.data) {
+                    <tr><td>{{ h.data }}</td><td>{{ h.status }}</td><td>{{ h.responsavel }}</td></tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <div class="p-3 text-muted">Sem histórico registrado</div>
+            }
+          </div>
         </div>
 
         @if (i.status === 'Aguardando revisão') {
@@ -76,17 +125,29 @@ export class RevisaoComponent implements OnInit {
   private api = inject(ApiService);
   private route = inject(ActivatedRoute);
   inspecao: Inspecao | null = null;
+  novaEvidencia = '';
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.api.obter<Inspecao>('inspecoes', id).subscribe(d => this.inspecao = d);
   }
 
+  addEvidencia(): void {
+    if (!this.inspecao || !this.novaEvidencia) return;
+    const evidencias = [...(this.inspecao.evidencias || []), this.novaEvidencia];
+    this.api.editar<Inspecao>('inspecoes', this.inspecao.id, { evidencias }).subscribe(() => {
+      this.inspecao = { ...this.inspecao!, evidencias };
+      this.novaEvidencia = '';
+    });
+  }
+
   decidir(status: StatusInspecao): void {
     if (!this.inspecao) return;
     if (status === 'Reprovada' && !confirm('Reprovar a inspeção?')) return;
-    this.api.editar<Inspecao>('inspecoes', this.inspecao.id, { status }).subscribe(() => {
-      this.inspecao = { ...this.inspecao!, status: status as Inspecao['status'] };
+    const hoje = new Date().toISOString().slice(0, 10);
+    const historico = [...(this.inspecao.historico || []), { data: hoje, status, responsavel: 'Supervisor' }];
+    this.api.editar<Inspecao>('inspecoes', this.inspecao.id, { status, historico }).subscribe(() => {
+      this.inspecao = { ...this.inspecao!, status, historico };
     });
   }
 }
