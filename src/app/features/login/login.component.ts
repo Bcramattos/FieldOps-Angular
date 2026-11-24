@@ -504,12 +504,13 @@ import { Router } from '@angular/router';
   `
 })
 export class LoginComponent {
+  message = '';
   email = '';
   senha = '';
 
   constructor(private router: Router) {}
 
-  entrar(): void {
+  enter(): void {
     this.router.navigate(['/dashboard']);
   }
 }
