@@ -27,27 +27,24 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
                   [class.bg-warning]="e.status === 'manutenção'"
                   [class.bg-secondary]="e.status === 'inativo'">{{ e.status }}</span></td>
               <td>
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="editar(e)"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-sm btn-outline-danger" (click)="excluir(e.id)"><i class="bi bi-trash"></i></button>
               </td>
             </tr>
           }
         </tbody>
       </table>
-
       <div class="modal fade" id="modalEquip">
         <div class="modal-dialog">
           <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Novo equipamento</h5>
+            <div class="modal-header"><h5 class="modal-title">{{ editando ? 'Editar' : 'Novo' }} equipamento</h5>
               <button class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
               <input class="form-control mb-2" placeholder="Nome" [(ngModel)]="form.nome">
-              <input class="form-control mb-2" placeholder="Tipo (câmera, drone, lente...)" [(ngModel)]="form.tipo">
+              <input class="form-control mb-2" placeholder="Tipo" [(ngModel)]="form.tipo">
               <select class="form-select mb-2" [(ngModel)]="form.status">
                 <option value="ativo">Ativo</option><option value="manutenção">Manutenção</option>
                 <option value="inativo">Inativo</option>
-              </select>
-              <select class="form-select mb-2" [(ngModel)]="form.localId">
-                <option [value]="0">Selecione o local</option>
               </select>
             </div>
             <div class="modal-footer">
@@ -64,8 +61,16 @@ export class EquipamentosComponent implements OnInit {
   private api = inject(ApiService);
   equipamentos: Equipamento[] = [];
   form: Equipamento = { id: 0, nome: '', localId: 0, tipo: '', status: 'ativo' };
+  editando = false;
 
-  ngOnInit(): void { this.api.listar<Equipamento>('equipamentos').subscribe(d => this.equipamentos = d); }
-  salvar(): void { this.api.criar<Equipamento>('equipamentos', this.form).subscribe(() => { this.form = { id: 0, nome: '', localId: 0, tipo: '', status: 'ativo' }; }); }
-  excluir(id: number): void { if (confirm('Excluir?')) this.api.excluir('equipamentos', id).subscribe(); }
+  ngOnInit(): void { this.carregar(); }
+  carregar(): void { this.api.listar<Equipamento>('equipamentos').subscribe(d => this.equipamentos = d); }
+  editar(e: Equipamento): void { this.form = { ...e }; this.editando = true; this.abrir(); }
+  abrir(): void { const el = document.getElementById('modalEquip'); if (el) { el.classList.add('show'); (el as any).style.display = 'block'; document.body.classList.add('modal-open'); } }
+  salvar(): void {
+    if (this.editando) { this.api.editar<Equipamento>('equipamentos', this.form.id, this.form).subscribe(() => this.carregar()); }
+    else { this.api.criar<Equipamento>('equipamentos', this.form).subscribe(() => this.carregar()); }
+    this.form = { id: 0, nome: '', localId: 0, tipo: '', status: 'ativo' }; this.editando = false;
+  }
+  excluir(id: number): void { if (confirm('Excluir equipamento?')) this.api.excluir('equipamentos', id).subscribe(() => this.carregar()); }
 }
