@@ -1,0 +1,29 @@
+{
+  "clientes": [
+    {"id": 1, "nome": "Acme Indústrias LTDA", "cnpj": "12.345.678/0001-90", "email": "contato@acme.com.br", "telefone": "(11) 4000-1234"},
+    {"id": 2, "nome": "Beta Audiovisual ME", "cnpj": "23.456.789/0001-01", "email": "beta@audiovisual.com", "telefone": "(11) 3555-5678"},
+    {"id": 3, "nome": "Studio Gamma Produções", "cnpj": "34.567.890/0001-12", "email": "gamma@studio.com.br", "telefone": "(19) 3232-9090"}
+  ],
+  "locais": [
+    {"id": 1, "nome": "Galpão Central", "clienteId": 1, "endereco": "Av. Industrial 1000 - São Paulo/SP"},
+    {"id": 2, "nome": "Estúdio Principal", "clienteId": 2, "endereco": "Rua das Câmeras 200 - São Paulo/SP"},
+    {"id": 3, "nome": "Set Externo Itu", "clienteId": 3, "endereco": "Estrada do Set 300 - Itu/SP"}
+  ],
+  "equipamentos": [
+    {"id": 1, "nome": "Drone DJI Mavic 3", "localId": 1, "tipo": "drone", "status": "ativo"},
+    {"id": 2, "nome": "Câmera Sony A7S III", "localId": 2, "tipo": "câmera", "status": "ativo"},
+    {"id": 3, "nome": "Notebook Macbook Pro 16", "localId": 3, "tipo": "notebook", "status": "manutenção"}
+  ],
+  "modelos": [
+    {"id": 1, "nome": "Checklist Drone Vistoria", "descricao": "Vistoria de drone antes do voo", "qtdItens": 12, "versao": "1.0", "status": "publicado"},
+    {"id": 2, "nome": "Checklist Estúdio", "descricao": "Inspeção do estúdio de gravação", "qtdItens": 8, "versao": "1.2", "status": "rascunho"},
+    {"id": 3, "nome": "Checklist Equipamento TI", "descricao": "Inspeção de equipamentos de TI", "qtdItens": 15, "versao": "2.0", "status": "publicado"}
+  ],
+  "inspecoes": [
+    {"id": 1, "codigo": "INS-0242", "clienteId": 1, "equipamentoId": 1, "checklistModeloId": 1, "tecnico": "Carlos Silva", "data": "2026-11-24", "prioridade": "alta", "status": "Planejada", "observacoes": "Vistoria inicial do drone novo", "naoConformidades": [], "evidencias": []},
+    {"id": 2, "codigo": "INS-0243", "clienteId": 2, "equipamentoId": 2, "checklistModeloId": 2, "tecnico": "Ana Souza", "data": "2026-11-24", "prioridade": "media", "status": "Em andamento", "observacoes": "Em inspeção no estúdio", "naoConformidades": ["Luz 3 com cabo exposto"], "evidencias": []},
+    {"id": 3, "codigo": "INS-0244", "clienteId": 3, "equipamentoId": 3, "checklistModeloId": 3, "tecnico": "Pedro Lima", "data": "2026-11-23", "prioridade": "baixa", "status": "Aguardando revisão", "observacoes": "Concluída ontem, aguardando revisão", "naoConformidades": ["Notebook sem etiqueta de inventário", "Cabo de rede danificado"], "evidencias": []},
+    {"id": 4, "codigo": "INS-0245", "clienteId": 1, "equipamentoId": 1, "checklistModeloId": 1, "tecnico": "Lucas Ferreira", "data": "2026-11-22", "prioridade": "media", "status": "Aprovada", "observacoes": "Tudo conforme", "naoConformidades": [], "evidencias": []},
+    {"id": 5, "codigo": "INS-0246", "clienteId": 2, "equipamentoId": 2, "checklistModeloId": 2, "tecnico": "Ana Souza", "data": "2026-11-22", "prioridade": "alta", "status": "Cancelada", "observacoes": "Cancelada pelo cliente", "naoConformidades": [], "evidencias": []}
+  ]
+}

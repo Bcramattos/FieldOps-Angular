@@ -7,9 +7,11 @@ import { ModelosComponent } from './features/modelos/modelos.component';
 import { PlanejamentoComponent } from './features/planejamento/planejamento.component';
 import { AcompanhamentoComponent } from './features/acompanhamento/acompanhamento.component';
 import { RevisaoComponent } from './features/revisao/revisao.component';
+import { LoginComponent } from './features/login/login.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'clientes', component: ClientesComponent },
   { path: 'locais', component: LocaisComponent },
@@ -18,5 +20,5 @@ export const routes: Routes = [
   { path: 'planejamento', component: PlanejamentoComponent },
   { path: 'acompanhamento', component: AcompanhamentoComponent },
   { path: 'revisao/:id', component: RevisaoComponent },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: 'login' }
 ];
