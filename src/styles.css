@@ -74,3 +74,15 @@ main.flex-grow-1 { margin-left: var(--sidebar-width); padding: 25px 28px 40px; b
   border-radius: var(--radius-sm);
   padding: 8px;
 }
+
+/* ===== Design System do prototipo (theme/original - Heitor) ===== */
+@import './app/theme/original/navigation.css';
+@import './app/theme/original/dashboard.css';
+@import './app/theme/original/clients.css';
+@import './app/theme/original/equipamentos.css';
+@import './app/theme/original/locais.css';
+@import './app/theme/original/modelos.css';
+@import './app/theme/original/planejamento.css';
+@import './app/theme/original/historico.css';
+@import './app/theme/original/conformidades.css';
+@import './app/theme/original/login.css';
