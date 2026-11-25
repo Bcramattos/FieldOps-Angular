@@ -1,5 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { Inspecao, Cliente, Metrica } from '../../core/models/models';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -7,19 +9,55 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule, RouterLink, SidebarComponent],
+  styleUrl: '../../theme/original/dashboard.css',
   template: `
-    <div class="container-fluid p-4">
-      <h1 class="h3 mb-4">Visão geral</h1>
-      @for (a of alertas(); track a.texto) {
-        <div class="alert mb-2 d-flex align-items-center gap-2"
-             [class.alert-danger]="a.tipo === 'danger'"
-             [class.alert-warning]="a.tipo === 'warning'" role="alert">
-          <i class="bi" [class.bi-exclamation-octagon-fill]="a.tipo === 'danger'"
-             [class.bi-exclamation-triangle-fill]="a.tipo === 'warning'"></i>
-          <div>{{ a.texto }}</div>
+    <main class="dashboard">
+      <section class="fo-header">
+        <div>
+          <span class="fo-eyebrow">FIELDOPS / OVERVIEW</span>
+          <h1>Visão geral</h1>
+          <p>Acompanhe o andamento das inspeções e as pendências da operação.</p>
         </div>
-      }
+        <button type="button" class="fo-primary-btn" (click)="newInspection()">
+          <i class="bi bi-plus-lg"></i> Nova inspeção
+        </button>
+      </section>
+
+      <section class="fo-operation-alert">
+        <div class="fo-operation-alert-icon"><i class="bi bi-exclamation-triangle"></i></div>
+        <div class="fo-operation-alert-content">
+          <div class="fo-operation-alert-heading">
+            <strong>Atenção às inspeções pendentes</strong>
+            <span class="fo-operation-alert-tag">{{ overdue.length }} ATRASADAS</span>
+          </div>
+          <p>Existem {{ overdue.length }} inspeções fora do prazo e {{ reviewCount }} aguardando revisão.</p>
+        </div>
+        <a routerLink="/acompanhamento" class="fo-operation-alert-link">Ver pendências <i class="bi bi-arrow-right"></i></a>
+      </section>
+
+      <section class="fo-panel fo-metrics-panel">
+        <div class="fo-panel-header fo-metrics-header">
+          <div>
+            <span class="fo-eyebrow">DESEMPENHO OPERACIONAL</span>
+            <h2>Volume de inspeções</h2>
+            <p>Distribuição das atividades nos últimos 7 dias.</p>
+          </div>
+        </div>
+        <div class="fo-chart">
+          @for (day of chartBars; track day.label) {
+            <div class="fo-chart-column">
+              <div class="fo-chart-bars">
+                <div class="fo-bar-segment pending" [style.height.%]="chartHeight(day, 'pending')"></div>
+                <div class="fo-bar-segment running" [style.height.%]="chartHeight(day, 'running')"></div>
+                <div class="fo-bar-segment completed" [style.height.%]="chartHeight(day, 'completed')"></div>
+              </div>
+              <span class="fo-chart-label">{{ day.label }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
       <div class="row g-3 mb-4">
         @for (m of metricas(); track m.label) {
           <div class="col-md-3">
@@ -32,31 +70,12 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
           </div>
         }
       </div>
+
       <div class="card mb-4">
-        <div class="card-header"><i class="bi bi-bar-chart-fill"></i> Andamento das inspeções</div>
-        <div class="card-body">
-          @for (m of metricas(); track m.label) {
-            <div class="mb-2">
-              <div class="d-flex justify-content-between small">
-                <span>{{ m.label }}</span><span>{{ m.valor }}</span>
-              </div>
-              <div class="progress" style="height: 22px">
-                <div class="progress-bar" [class.bg-primary]="m.classe === 'primary'"
-                     [class.bg-warning]="m.classe === 'warning'"
-                     [class.bg-info]="m.classe === 'info'"
-                     [class.bg-success]="m.classe === 'success'"
-                     [class.bg-danger]="m.classe === 'danger'"
-                     [style.width.%]="porcentagem(m.valor)"></div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-      <div class="card">
         <div class="card-header"><i class="bi bi-clock-history"></i> Inspeções recentes</div>
         <div class="card-body p-0">
           <table class="table table-hover mb-0">
-            <thead><tr><th>Código</th><th>Cliente</th><th>Técnico</th><th>Data</th><th>Prioridade</th><th>Status</th></tr></thead>
+            <thead><tr><th>Código</th><th>Cliente</th><th>Técnico</th><th>Data</th><th>Status</th></tr></thead>
             <tbody>
               @for (i of recentes(); track i.id) {
                 <tr>
@@ -64,30 +83,66 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
                   <td>{{ nomeCliente(i.clienteId) }}</td>
                   <td>{{ i.tecnico }}</td>
                   <td>{{ i.data }}</td>
-                  <td><span class="badge" [class.bg-secondary]="i.prioridade === 'baixa'"
-                      [class.bg-warning]="i.prioridade === 'media'"
-                      [class.bg-danger]="i.prioridade === 'alta'">{{ i.prioridade }}</span></td>
-                  <td><span class="badge" [class.bg-secondary]="i.status === 'Planejada'"
+                  <td><span class="badge" [class.bg-success]="i.status === 'Aprovada'"
+                      [class.bg-danger]="i.status === 'Reprovada'"
                       [class.bg-warning]="i.status === 'Em andamento'"
-                      [class.bg-info]="i.status === 'Aguardando revisão'"
-                      [class.bg-success]="i.status === 'Aprovada'"
-                      [class.bg-danger]="i.status === 'Reprovada' || i.status === 'Cancelada'">{{ i.status }}</span></td>
+                      [class.bg-info]="i.status === 'Aguardando revisão'">{{ i.status }}</span></td>
                 </tr>
               }
             </tbody>
           </table>
         </div>
       </div>
-    </div>
+    </main>
   `
 })
 export class DashboardComponent implements OnInit {
   private api = inject(ApiService);
+  private router = inject(Router);
   inspecoes = signal<Inspecao[]>([]);
   clientes = signal<Cliente[]>([]);
 
-  metricas = computed((): Metrica[] => {
-    const total = this.inspecoes().length || 1;
+  ngOnInit(): void {
+    this.api.listar<Inspecao>('inspecoes').subscribe(d => this.inspecoes.set(d));
+    this.api.listar<Cliente>('clientes').subscribe(d => this.clientes.set(d));
+  }
+
+  get canPlan(): boolean { return true; }
+  get overdue(): any[] { return this.inspecoes().filter(i => i.status === 'Reprovada'); }
+  newInspection(): void { this.router.navigate(['/planejamento']); }
+
+  get scheduledCount(): number { return this.inspecoes().filter(i => i.status === 'Planejada').length; }
+  get inProgressCount(): number { return this.inspecoes().filter(i => i.status === 'Em andamento').length; }
+  get reviewCount(): number { return this.inspecoes().filter(i => i.status === 'Aguardando revisão').length; }
+
+  readonly weeklyDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+  get chartBars(): any[] {
+    const bars = [];
+    const hoje = new Date();
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(hoje);
+      d.setDate(d.getDate() - (6 - i));
+      const dayStr = d.toISOString().slice(0, 10);
+      const doDia = this.inspecoes().filter(ins => ins.data === dayStr);
+      bars.push({
+        label: ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'][(d.getDay() + 6) % 7],
+        pending: doDia.filter(x => x.status === 'Planejada').length,
+        running: doDia.filter(x => x.status === 'Em andamento').length,
+        completed: doDia.filter(x => x.status === 'Aprovada').length,
+      });
+    }
+    return bars;
+  }
+
+  chartHeight(day: any, tipo: string): number {
+    return Math.min((day[tipo] || 0) * 20, 100);
+  }
+
+  newInspectionNav(): void { this.router.navigate(['/planejamento']); }
+
+  metricas(): Metrica[] {
+    const total = this.inspecoes.length || 1;
     const por = (s: string) => this.inspecoes().filter(i => i.status === s).length;
     const nc = this.inspecoes().filter(i => (i.naoConformidades || []).length > 0).length;
     return [
@@ -97,32 +152,19 @@ export class DashboardComponent implements OnInit {
       { label: 'Concluídas', valor: por('Aprovada'), classe: 'success' },
       { label: 'Não conformidades', valor: nc, classe: 'danger' },
     ];
-  });
+  }
 
-  alertas = computed(() => {
-    const alta = this.inspecoes().filter(i => i.prioridade === 'alta' && (i.status === 'Planejada' || i.status === 'Reprovada'));
-    const fila = this.inspecoes().filter(i => i.status === 'Aguardando revisão');
-    const out: { tipo: string; texto: string }[] = [];
-    if (alta.length) out.push({ tipo: 'danger', texto: 'Prioridade alta: ' + alta.length + ' inspecao(oes) com prioridade alta ou atrasada(s) — verificar acompanhamento.' });
-    if (fila.length) out.push({ tipo: 'warning', texto: 'Atencao: ' + fila.length + ' inspecao(oes) aguardando revisao — fila pendente de aprovacao.' });
-    return out;
-  });
-
-  recentes = computed(() =>
-    [...this.inspecoes()].sort((a, b) => (b.data || '').localeCompare(a.data || '')).slice(0, 10)
-  );
-
-  ngOnInit(): void {
-    this.api.listar<Inspecao>('inspecoes').subscribe(d => this.inspecoes.set(d));
-    this.api.listar<Cliente>('clientes').subscribe(d => this.clientes.set(d));
+  recentes(): any[] {
+    return [...this.inspecoes()].sort((a, b) => (b.data || '').localeCompare(a.data || '')).slice(0, 10);
   }
 
   porcentagem(valor: number): number {
-    const total = this.inspecoes().length || 1;
-    return Math.round((valor / total) * 100);
+    return Math.round((valor / (this.inspecoes.length || 1)) * 100);
   }
 
   nomeCliente(id: number): string {
     return this.clientes().find(c => c.id === id)?.nome || String(id);
   }
+
+  newInspectionRedirect(): void { this.router.navigate(['/planejamento']); }
 }
