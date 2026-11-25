@@ -511,6 +511,7 @@ export class LoginComponent {
   constructor(private router: Router) {}
 
   enter(): void {
+    sessionStorage.setItem('fieldops_logado', 'true');
     this.router.navigate(['/dashboard']);
   }
 }
