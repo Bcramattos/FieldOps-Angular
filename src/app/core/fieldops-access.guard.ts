@@ -1,1 +1,12 @@
-import { inject } from '@angular/core';\nimport { CanActivateFn, Router } from '@angular/router';\n\nexport function fieldops_authGuard(): CanActivateFn {\n  return () => {\n    const router = inject(Router);\n    const logado = sessionStorage.getItem('fieldops_logado') === 'true';\n    if (logado) return true;\n    router.navigate(['/login']);\n    return false;\n  };\n}\n
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+
+export function fieldopsAuthGuard(): CanActivateFn {
+  return () => {
+    const router = inject(Router);
+    const logado = sessionStorage.getItem('fieldops_logado') === 'true';
+    if (logado) return true;
+    router.navigate(['/login']);
+    return false;
+  };
+}
